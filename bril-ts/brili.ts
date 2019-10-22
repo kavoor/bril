@@ -2,6 +2,14 @@
 import * as bril from './bril';
 import {readStdin, unreachable} from './util';
 import { isConstructSignatureDeclaration } from 'typescript';
+const ffi = require('ffi');
+const libPath = '../thread-count/native/target/release/libthread_count';
+const libWeb = ffi.Library(libPath, {
+  'add': [ 'int32', [ 'int32', 'int32' ] ]
+});
+const { add, subtract, multiply } = libWeb;
+console.log('4 + 2 = ', add(4, 2));
+
 
 const argCounts: {[key in bril.OpCode]: number | null} = {
   add: 2,
@@ -159,8 +167,13 @@ function evalInstr(instr: bril.Instruction, env: Env): Action {
   }
 
   case "add": {
-    let val = getInt(instr, env, 0) + getInt(instr, env, 1);
+    let l = getInt(instr, env, 0);
+    let r = getInt(instr, env, 1);
+
+    let val = add(l, r);
     env.set(instr.dest, val);
+    console.log(val);
+    // console.log(a);
     return NEXT;
   }
 

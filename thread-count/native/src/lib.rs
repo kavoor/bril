@@ -10,12 +10,17 @@ fn thread_count(mut cx: FunctionContext) -> JsResult<JsNumber> {
     Ok(cx.number(num_cpus::get() as f64))
 }
 
-fn add(mut cx: FunctionContext) -> JsResult<JsNumber> {
-    let a = 8 as f64;
-    let b = 10 as f64;
-    Ok(cx.number(a + b))
+#[no_mangle]
+pub fn add(first: i32, second:i32) -> i32 {
+ first + second
 }
-register_module!(mut m, {
-    // m.export_function("threadCount", thread_count)
-    m.export_function("add", add)
-});
+
+// fn add(mut cx: FunctionContext) -> JsResult<JsNumber> {
+//     let a = 8 as f64;
+//     let b = 10 as f64;
+//     Ok(cx.number(a + b))
+// }
+// register_module!(mut m, {
+//     // m.export_function("threadCount", thread_count)
+//     m.export_function("add", add)
+// });
