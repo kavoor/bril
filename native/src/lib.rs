@@ -1,6 +1,5 @@
 extern crate core;
 use core::arch::x86_64::*;
-use std::slice;
 
 #[no_mangle]
 pub fn add(first: i32, second:i32) -> i32 {
@@ -8,67 +7,46 @@ pub fn add(first: i32, second:i32) -> i32 {
 }
 
 #[no_mangle] 
-pub fn vadd(dataA: *const i32, dataB: *const i32, dataC: *mut i32) -> i32 {
-    let len = 4;
-    let arrayA = unsafe { slice::from_raw_parts(dataA, len as usize)};
-    let arrayB = unsafe { slice::from_raw_parts(dataB, len as usize)};
-    let mut arrayC = unsafe { slice::from_raw_parts_mut(dataC, len as usize)};
+pub fn vadd(data_a: *const i32, data_b: *const i32, data_c: *mut i32) -> i32 {
     unsafe {
-        let memc = dataC as *mut _;
-        let mema = dataA as *const _;
-        let memb = dataB as *const _;
-        let a = _mm_loadu_si128(mema);
-        let b = _mm_loadu_si128(memb);
-        // let a = _mm_set_epi32(arrayA[3], arrayA[2], arrayA[1], arrayA[0]);
-        // let b = _mm_set_epi32(arrayB[3], arrayB[2], arrayB[1], arrayB[0]);
-        let valc = _mm_add_epi32(a, b);
-        let memc = dataC as *mut _;
-        _mm_storeu_si128(memc, valc);
-        std::mem::forget(memc);
+        let mem_a = data_a as *const _;
+        let mem_b = data_b as *const _;
+        let mem_c = data_c as *mut _;
+        let a = _mm_load_si128(mem_a);
+        let b = _mm_load_si128(mem_b);
+        let c = _mm_add_epi32(a, b);
+        _mm_store_si128(mem_c, c);
+        std::mem::forget(mem_c);
         1
     }
 }
 
 #[no_mangle] 
-pub fn vsub(dataA: *const i32, dataB: *const i32, dataC: *mut i32) -> i32 {
-    let len = 4;
-    let arrayA = unsafe { slice::from_raw_parts(dataA, len as usize)};
-    let arrayB = unsafe { slice::from_raw_parts(dataB, len as usize)};
-    let mut arrayC = unsafe { slice::from_raw_parts_mut(dataC, len as usize)};
+pub fn vsub(data_a: *const i32, data_b: *const i32, data_c: *mut i32) -> i32 {
     unsafe {
-        let memc = dataC as *mut _;
-        let mema = dataA as *const _;
-        let memb = dataB as *const _;
-        let a = _mm_loadu_si128(mema);
-        let b = _mm_loadu_si128(memb);
-        // let a = _mm_set_epi32(arrayA[3], arrayA[2], arrayA[1], arrayA[0]);
-        // let b = _mm_set_epi32(arrayB[3], arrayB[2], arrayB[1], arrayB[0]);
-        let valc = _mm_sub_epi32(a, b);
-        let memc = dataC as *mut _;
-        _mm_storeu_si128(memc, valc);
-        std::mem::forget(memc);
+        let mem_a = data_a as *const _;
+        let mem_b = data_b as *const _;
+        let mem_c = data_c as *mut _;
+        let a = _mm_load_si128(mem_a);
+        let b = _mm_load_si128(mem_b);
+        let c = _mm_sub_epi32(a, b);
+        _mm_store_si128(mem_c, c);
+        std::mem::forget(mem_c);
         1
     }
 }
 
 #[no_mangle] 
-pub fn vmul(dataA: *const i32, dataB: *const i32, dataC: *mut i32) -> i32 {
-    let len = 4;
-    let arrayA = unsafe { slice::from_raw_parts(dataA, len as usize)};
-    let arrayB = unsafe { slice::from_raw_parts(dataB, len as usize)};
-    let mut arrayC = unsafe { slice::from_raw_parts_mut(dataC, len as usize)};
+pub fn vmul(data_a: *const i32, data_b: *const i32, data_c: *mut i32) -> i32 {
     unsafe {
-        let memc = dataC as *mut _;
-        let mema = dataA as *const _;
-        let memb = dataB as *const _;
-        let a = _mm_loadu_si128(mema);
-        let b = _mm_loadu_si128(memb);
-        // let a = _mm_set_epi32(arrayA[3], arrayA[2], arrayA[1], arrayA[0]);
-        // let b = _mm_set_epi32(arrayB[3], arrayB[2], arrayB[1], arrayB[0]);
-        let valc = _mm_mul_epi32(a, b);
-        let memc = dataC as *mut _;
-        _mm_storeu_si128(memc, valc);
-        std::mem::forget(memc);
+        let mem_a = data_a as *const _;
+        let mem_b = data_b as *const _;
+        let mem_c = data_c as *mut _;
+        let a = _mm_load_si128(mem_a);
+        let b = _mm_load_si128(mem_b);
+        let c = _mm_mullo_epi16(a, b);
+        _mm_store_si128(mem_c, c);
+        std::mem::forget(mem_c);
         1
     }
 }
