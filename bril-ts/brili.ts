@@ -3,12 +3,18 @@ import * as bril from './bril';
 import {readStdin, unreachable} from './util';
 import { isConstructSignatureDeclaration } from 'typescript';
 const ffi = require('ffi');
-const libPath = '../thread-count/native/target/release/libthread_count';
+const libPath = '../native/target/release/libthread_count';
+
+const ref = require('ref');
+const ArrayType = require('ref-array');
+const IntArray = ArrayType(ref.types.int32);
+
 const libWeb = ffi.Library(libPath, {
   'add': [ 'int32', [ 'int32', 'int32' ] ]
+  ,
+  'vadd':['int32',['int32', 'int32', 'int32', 'int32','int32', 'int32', 'int32', 'int32', IntArray]]
 });
-const { add, subtract, multiply } = libWeb;
-console.log('4 + 2 = ', add(4, 2));
+const { add, vadd} = libWeb;
 
 
 const argCounts: {[key in bril.OpCode]: number | null} = {
@@ -173,7 +179,12 @@ function evalInstr(instr: bril.Instruction, env: Env): Action {
     let val = add(l, r);
     env.set(instr.dest, val);
     console.log(val);
-    // console.log(a);
+    let vecC = new Int32Array(fixedVecSize);
+    console.log(typeof vecC)
+    let d = vadd(l,l,l,l,r,r,r,r, vecC);
+    console.log(vecC[0])
+    // console.log(vecC[2])
+    // console.log(vecC)
     return NEXT;
   }
 
