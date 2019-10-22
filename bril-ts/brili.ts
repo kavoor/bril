@@ -8,13 +8,35 @@ const libPath = '../native/target/release/libthread_count';
 const ref = require('ref');
 const ArrayType = require('ref-array');
 const IntArray = ArrayType(ref.types.int32);
+const ByteArray = ArrayType(ref.types.uint8);
 
 const libWeb = ffi.Library(libPath, {
-  'add': [ 'int32', [ 'int32', 'int32' ] ]
-  ,
-  'vadd':['int32',['int32', 'int32', 'int32', 'int32','int32', 'int32', 'int32', 'int32', IntArray]]
+  'add': [ 'int32', [ 'int32', 'int32' ] ],
+  'vadd': ['int32', [IntArray, IntArray, IntArray, 'int']],
+  'vmul': ['int32', [IntArray, IntArray, IntArray, 'int']],
+  'vsub': ['int32', [IntArray, IntArray, IntArray, 'int']],
 });
+
 const { add, vadd} = libWeb;
+const array = [1,2,3,4];
+const array1 = new IntArray(4);
+array1[1] = 7;
+array1[2] = 7;
+array1[0] = 7;
+array1[3] = 7;
+const array2 = new IntArray(4);
+
+console.log(array[0]);
+
+
+(function(js_array, js_array1, js_array2){
+  console.log("length", js_array.length)
+  let a = vadd(js_array, js_array1, js_array2, js_array.length);
+  console.log(array2[0]);
+  console.log(array2[1]);
+  console.log(array2[2]);
+  console.log(array2[3]);
+})(array, array1, array2);
 
 
 const argCounts: {[key in bril.OpCode]: number | null} = {
@@ -178,13 +200,6 @@ function evalInstr(instr: bril.Instruction, env: Env): Action {
 
     let val = add(l, r);
     env.set(instr.dest, val);
-    console.log(val);
-    let vecC = new Int32Array(fixedVecSize);
-    console.log(typeof vecC)
-    let d = vadd(l,l,l,l,r,r,r,r, vecC);
-    console.log(vecC[0])
-    // console.log(vecC[2])
-    // console.log(vecC)
     return NEXT;
   }
 
